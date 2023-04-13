@@ -1,0 +1,43 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>URL Shortener</title>
+  </head>
+  <body>
+    <h1>URL Shortener</h1>
+    <label for="url-input">Enter URL:</label>
+    <input type="text" id="url-input" name="url-input">
+    <button id="generate-button" onclick="generateShortUrl()">Generate</button>
+    <div id="result"></div>
+    <script>
+      function generateShortUrl() {
+        var urlInput = document.getElementById("url-input");
+        var resultDiv = document.getElementById("result");
+        resultDiv.innerHTML = "";
+
+        if (urlInput.value.trim() === "") {
+          resultDiv.innerHTML = "Please enter a valid URL";
+          return;
+        }
+
+        var request = new XMLHttpRequest();
+        var baseUrl ="http://localhost:8080/api/url-mapping/"
+        var url = "http://localhost:8080/api/url-mapping/generate";
+        var payload = JSON.stringify({ "originalUrl": urlInput.value });
+        request.open("POST", url);
+        request.setRequestHeader("Content-Type", "application/json");
+        request.onload = function () {
+          if (request.status === 200) {
+            var response = JSON.parse(request.responseText);
+            var finalResult =baseUrl+response.shortUrl;
+            resultDiv.innerHTML = "Short URL: " + '<a href="'+finalResult+'">'+finalResult+ '</a>';
+          } else {
+            resultDiv.innerHTML = "Error generating short URL";
+          }
+        };
+        request.send(payload);
+      }
+    </script>
+  </body>
+</html>
